@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -113,7 +114,11 @@ func ProjectSetting() *Project {
 		panic("环境变量前缀不能为空")
 	}
 
-	fmt.Printf("请确认配置：%v\n", project)
+	fmt.Printf("请确认配置（按Y确认）：%v", project)
+	text, _ = reader.ReadString('\n')
+	if !strings.HasPrefix(strings.ToLower(text), "y") {
+		os.Exit(1)
+	}
 	return project
 }
 
@@ -143,20 +148,29 @@ func RenderTemplateProject(dst string, proj *Project) error {
 
 func main() {
 	proj := ProjectSetting()
+	log.Println("开始下载模板文件")
 	f, err := DownloadTemplate(TemplateURL)
 	if err != nil {
 		panic(err)
 	}
 
+	log.Println("解压缩模板文件")
 	err = Unzip(f)
 	if err != nil {
 		panic(err)
 	}
+
+	log.Println("开始渲染模板")
 	err = RenderTemplateProject(UnzipDirectory, proj)
 	if err != nil {
 		panic(err)
 	}
 
 	ds := strings.Split(proj.Module, "/")
-	os.Rename(UnzipDirectory, ds[len(ds)-1])
+	log.Println("重命名项目" + ds[len(ds)-1])
+	if err = os.Rename(UnzipDirectory, ds[len(ds)-1]); err != nil {
+		panic(err)
+	}
+
+	log.Println("完成，小的退下了")
 }
