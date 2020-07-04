@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	TemplateURL    = "https://github.com/jacexh/golang-ddd-template/archive/master.zip"
-	UnzipDirectory = "golang-ddd-template-master"
+	TemplateURL    = "https://github.com/jacexh/golang-ddd-template/archive/template.zip"
+	UnzipDirectory = "golang-ddd-template-template"
 )
 
 type (
